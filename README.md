@@ -1,1 +1,1 @@
-# prestashop-electroneum-payment
+# Prestashop Electroneum Instant Payment
