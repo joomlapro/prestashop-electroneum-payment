@@ -48,7 +48,7 @@ class Electroneum extends PaymentModule
     {
         $this->name = 'electroneum';
         $this->tab = 'payments_gateways';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'JoomlaPro.com';
         $this->is_eu_compatible = 1;
         $this->controllers = array('payment', 'redirect', 'callback', 'cancel');
@@ -76,34 +76,48 @@ class Electroneum extends PaymentModule
 			 
 			 $result = $vendor->checkPaymentPoll(json_encode($payload));
 			 
-		 
+			  $objOrder = new Order($id_order); 
+			  $totalamount = $objOrder->total_paid;
+		
+			  
+			 
+			 $currency = new CurrencyCore($objOrder->id_currency);
+			 $currencycode = $currency->iso_code;
+			  
+			  
+			 $result = array();
+			 $result['status']= 1;
+			 $result['amount']= 10;
+			 
 			 
 			 $return = array();
+			 $return['showerror'] = 0;
 	 	     if($result['status'] == 1) 
 			 {
+				 $etnshouldreceive = $vendor->currencyToEtn($totalamount, $currencycode);
+				 if($result['amount'] ==  $etnshouldreceive)
+				 {
+					 $return['success'] = 1;
+					 $return['amount'] = $result['amount'];
+					 $result['message'] = '';
+					 
+					 $objOrder = new Order($id_order); 
+					 $history = new OrderHistory();
+					 $history->id_order = (int)$objOrder->id;
+					 $history->changeIdOrderState(Configuration::get('ELECTRONEUM_CONFIRMING'), (int)($objOrder->id));  
+				 }
+				 else
+				 {
+					  $return['success'] = 0;
+					  $return['showerror'] = 1;
+				      $return['message'] = 'ETN Response Amount Not matched to Order Amount';
+				 }
 				 
-			     $objOrder = new Order($id_order); 
-				 $history = new OrderHistory();
-				 $history->id_order = (int)$objOrder->id;
-				 $history->changeIdOrderState(Configuration::get('ELECTRONEUM_CONFIRMING'), (int)($objOrder->id));  
-				 
-				 $return['success'] = 1;
-				 $return['amount'] = $result['amount']; 
-				 $result['message'] = '';
 			 } 
 			 else if (!empty($result['message']))  
 			 {
 				 $return['success'] = 0;
 				 $return['message'] = $result['message'];
-				 
-			
-				  $objOrder = new Order($id_order); 
-				
-				 $history = new OrderHistory();
-				 $history->id_order = (int)$objOrder->id;
-				 $history->changeIdOrderState(Configuration::get('ELECTRONEUM_CONFIRMING'), (int)($objOrder->id));  
-				 
-				 $return['success'] = 1;
 			 }
 			 else
 			 {
@@ -351,6 +365,7 @@ class Electroneum extends PaymentModule
 				'etnpaymentid' => $vendor->getPaymentId(),
 				'apikey' => $apikey,
 				'qrImgUrl' => $qrImgUrl,
+				'currencycode' => $currencycode,
 				'secret' => $secret,
 				'outlet' => $outlet,
 				'htmlcontent' =>  Tools::htmlentitiesUTF8($html),
