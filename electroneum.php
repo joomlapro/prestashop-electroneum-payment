@@ -75,36 +75,37 @@ class Electroneum extends PaymentModule
  	         $payload['vendor_address'] = 'etn-it-'.$outlet;
 			 
 			 $result = $vendor->checkPaymentPoll(json_encode($payload));
-			 
-			  $objOrder = new Order($id_order); 
-			  $totalamount = $objOrder->total_paid;
-		
-			  
-			 
-			 $currency = new CurrencyCore($objOrder->id_currency);
-			 $currencycode = $currency->iso_code;
-			  
-			  
-			 $result = array();
-			 $result['status']= 1;
-			 $result['amount']= 10;
-			 
+			
+			 $etnshouldreceive = '';
+			 session_start();
+             if(!empty($_SESSION['etnvalue']))
+			 {
+			 	$etnshouldreceive = $_SESSION['etnvalue'];
+			 }
 			 
 			 $return = array();
 			 $return['showerror'] = 0;
-	 	     if($result['status'] == 1) 
+			 
+			 if($etnshouldreceive == '')
 			 {
-				 $etnshouldreceive = $vendor->currencyToEtn($totalamount, $currencycode);
+				  $return['success'] = 0;
+				  $return['showerror'] = 1;
+				  $return['message'] = 'Your session Timed out Please  Reload page and try again';
+			 }
+			 else if($result['status'] == 1) 
+			 {
 				 if($result['amount'] ==  $etnshouldreceive)
 				 {
 					 $return['success'] = 1;
 					 $return['amount'] = $result['amount'];
 					 $result['message'] = '';
+					
 					 
 					 $objOrder = new Order($id_order); 
 					 $history = new OrderHistory();
 					 $history->id_order = (int)$objOrder->id;
 					 $history->changeIdOrderState(Configuration::get('ELECTRONEUM_CONFIRMING'), (int)($objOrder->id));  
+					 $_SESSION['etnvalue'] = "";
 				 }
 				 else
 				 {
@@ -349,6 +350,8 @@ class Electroneum extends PaymentModule
 			
 			$qrImgUrl = $vendor->getQr($amtval, $currencycode, $outlet);
 			
+			session_start();
+			$_SESSION['etnvalue'] =  $vendor->getEtn();
 
 			
             $etnvalue = $vendor->getEtn();
