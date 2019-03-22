@@ -2,7 +2,7 @@
 <module>
     <name>electroneum</name>
     <displayName><![CDATA[Electroneum Payment Method]]></displayName>
-    <version><![CDATA[1.0.0]]></version>
+    <version><![CDATA[1.0.1]]></version>
     <description><![CDATA[Accept Payment from Electroneum Wallet]]></description>
     <author><![CDATA[JoomlaPro.com]]></author>
     <tab><![CDATA[payments_gateways]]></tab>

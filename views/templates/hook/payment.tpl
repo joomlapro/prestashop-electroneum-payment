@@ -45,6 +45,7 @@
 
 <div id="payments_electroneum" style="margin-top:15px;">
 <form class="uk-form uk-form-horizontal uk-text-center" style=" text-align:center;" id="electronium_payform" method="post" action="">
+            
 
 			<div id="paymentqr_div">
 				<div class="uk-form-row">
@@ -61,6 +62,8 @@
         
                    </div>
                </div>
+               <div id="error_div" style="color:#ff0000; margin:25px 0;">
+               </div>
 				
                 <div class="" style="margin:20px 0;">
                 	<button type="button" onclick="checkelectroneumresponse()" class="btn btn-primary btn-lg">Confirm</button>
@@ -73,6 +76,7 @@
 			 <svg id="checkmark_svg" style="display:none;" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
 		   </div>
 			
+            <input type="hidden" name="currencycode" value="{$currencycode}" id="currencycode" />
 		    <input type="hidden" name="ajaxlink" id="ajaxlink" value="{$ajax_link}" /> 
 			<input type="hidden" name="etn" id="etn" value="{$etnvalue}" /> 
 			<input type="hidden" name="paymentid" id="paymentid" value="{$etnpaymentid}" /> 

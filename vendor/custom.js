@@ -44,8 +44,11 @@ function checkelectroneumresponse()
 		 
 		 if(data.success == 0)
 		 {
-			 errorstring = '<div class="uk-alert" uk-alert><a href="" class="uk-alert-close uk-close"></a><p>'+data.message+'</p></div>';
-			 //jQuery("#error_div").html(errorstring);
+			 if(data.showerror == 1)
+			 {
+			   errorstring = data.message;
+			   jQuery("#error_div").html(errorstring);
+			 }
 			 
 			  setTimeout(function(){
 				checkelectroneumresponse(1);
